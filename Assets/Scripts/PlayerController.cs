@@ -125,4 +125,22 @@ public class PlayerController : MonoBehaviour
         rb.MovePosition(rb.position + moveDelta);
         distanceTraveled += moveDelta.magnitude;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //임시 게임 오버 기능
+        if(collision.collider.CompareTag("Enemy"))
+        {
+            Debug.Log("당신은 잡혔습니다!");
+            Time.timeScale = 0.0f;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        //임시 보물 획득 기능
+        if (collider.CompareTag("Goal"))
+        {
+            Debug.Log("보물을 얻었습니다!");
+        }
+    }
 }
