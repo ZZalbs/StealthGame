@@ -1,8 +1,10 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+// 플레이어의 이동, 걷기/달리기 상태 전환, 충돌 처리
+//
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+[RequireComponent(typeof(PlayerInputSystem))]
+public class PlayerMovement : MonoBehaviour
 {
     [Header("이동 설정")]
     public float moveSpeed = 3f;
@@ -16,14 +18,18 @@ public class PlayerController : MonoBehaviour
     public float distanceTraveled;
 
     private Rigidbody2D rb;
+    private PlayerInputSystem input;
     private Vector2 moveInput;
     private float currentSpeed;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        // --------------------- 여기에 넣을 것을 작성하세요. ---------------------------//
+        input = GetComponent<PlayerInputSystem>();
+        // ------------------------------------------------------------------------------//
     }
-
+    
     void Start()
     {
         moveInput = Vector2.zero;
@@ -34,50 +40,23 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // ----- 입력 처리 -----
-        // 입력은 Update 에서 읽습니다. 
-        // 키보드 읽기로 임시 구현하였습니다.
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard == null)
-        {
-            moveInput = Vector2.zero;
-            isMoving = false;
-            isRunning = false;
-            currentState = "Idle";
-            return;
-        }
+        // ----- 입력 반영 -----
+        // 입력은 PlayerInputSystem에서 읽어오고, 여기서는 그 결과를 사용합니다.
+        // --------------------- 여기에 넣을 것을 작성하세요. ---------------------------//
+        moveInput = input.moveInput;
+        // ------------------------------------------------------------------------------//
 
-        float h = 0f;
-        float v = 0f;
-
-        if (keyboard.aKey.isPressed)
-        {
-            h -= 1f;
-        }
-        if (keyboard.dKey.isPressed)
-        {
-            h += 1f;
-        }
-        if (keyboard.sKey.isPressed)
-        {
-            v -= 1f;
-        }
-        if (keyboard.wKey.isPressed)
-        {
-            v += 1f;
-        }
-
-        moveInput = new Vector2(h, v);
-        if (moveInput.sqrMagnitude > 1f)
-        {
-            moveInput.Normalize();
-        }
-
-        bool shiftHeld = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
+        // <현재 상태 확인>
+        // 현재 움직이는지, 서있는지, 달리는지 상태를 세팅합니다.
+        // 강의에서는 다루지 않을 예정이지만, 추후에 애니메이션을 추가할 때 도움이 됩니다.
+        isMoving = moveInput.sqrMagnitude > 0f;
 
         // <달리기 처리>
-        // 달리기 상태일 시 스피드 변화
-        isRunning = shiftHeld && moveInput.sqrMagnitude > 0f;
+        // 달리기 상태일 시 스피드 변화합니다.
+        // --------------------- 여기에 넣을 것을 작성하세요. ---------------------------//
+        isRunning = input.runHeld && isMoving;
+        // ------------------------------------------------------------------------------//
+
 
         if (isRunning)
         {
@@ -88,10 +67,7 @@ public class PlayerController : MonoBehaviour
             currentSpeed = moveSpeed;
         }
 
-        // <현재 상태 확인>
-        // 현재 움직이는지, 서있는지, 달리는지 상태를 세팅합니다.
-        // 강의에서는 다루지 않을 예정이지만, 추후에 애니메이션을 추가할 때 도움이 됩니다.
-        isMoving = moveInput.sqrMagnitude > 0f;
+        
 
         if (isMoving)
         {
@@ -115,7 +91,7 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         // ----- 이동 처리 -----
-        // 키보드 input에 기반하여 이동합니다.
+        // 입력에 기반하여 이동합니다.
         Vector2 moveDelta = moveInput * currentSpeed * Time.fixedDeltaTime;
         if (moveDelta == Vector2.zero)
         {
@@ -126,6 +102,8 @@ public class PlayerController : MonoBehaviour
         distanceTraveled += moveDelta.magnitude;
     }
 
+    // 아래 두 충돌 판정은 이동 로직과 직접적인 관련은 없는 임시 코드다.
+    // 추후에 정식 상호작용 시스템으로 대체될 예정이라 지금은 여기 임시로 둔다.
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //임시 게임 오버 기능
