@@ -7,6 +7,7 @@ public class PlayerInputSystem : MonoBehaviour
 {
     public Vector2 moveInput;
     public bool runHeld;
+    public bool isFlashlightOn;
 
     void Update()
     {
@@ -37,6 +38,10 @@ public class PlayerInputSystem : MonoBehaviour
         if (keyboard.wKey.isPressed)
         {
             v += 1f;
+        }
+        if (keyboard.fKey.wasPressedThisFrame)
+        {
+            isFlashlightOn = !isFlashlightOn;
         }
 
         moveInput = new Vector2(h, v);

@@ -92,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // ----- 이동 처리 -----
         // 입력에 기반하여 이동합니다.
-        Vector2 moveDelta = moveInput * currentSpeed * Time.fixedDeltaTime;
+        Vector2 moveDelta = moveInput * currentSpeed * Time.fixedDeltaTime; 
         if (moveDelta == Vector2.zero)
         {
             return;
